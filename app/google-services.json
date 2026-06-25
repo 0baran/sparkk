@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "568266447763",
+    "project_id": "spark-d317f",
+    "storage_bucket": "spark-d317f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568266447763:android:4332f4eda1197dc2566666",
+        "android_client_info": {
+          "package_name": "com.example.spark"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdnHqPZ3cYSQyCgq_V3jA_GHt1tUcpfRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
