@@ -3,7 +3,10 @@ package com.example.spark.data.repository
 import com.example.spark.domain.model.Party
 import com.example.spark.domain.model.Post
 import com.example.spark.domain.model.User
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 
 object SparkRepository {
@@ -12,7 +15,7 @@ object SparkRepository {
     suspend fun getFeedPosts(): Result<List<Post>> {
         return try {
             val snapshot = db.collection("posts")
-                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
             val posts = snapshot.toObjects(Post::class.java)
@@ -115,7 +118,7 @@ object SparkRepository {
             val sessionData = mapOf(
                 "hostId" to userId,
                 "matchedWith" to null,
-                "timestamp" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+                "timestamp" to FieldValue.serverTimestamp()
             )
             db.collection("qr_sessions").document(userId).set(sessionData).await()
             Result.success(Unit)
@@ -133,7 +136,7 @@ object SparkRepository {
         }
     }
 
-    fun listenToQrSession(hostId: String, onMatch: (String) -> Unit): com.google.firebase.firestore.ListenerRegistration {
+    fun listenToQrSession(hostId: String, onMatch: (String) -> Unit): ListenerRegistration {
         return db.collection("qr_sessions").document(hostId).addSnapshotListener { snapshot, _ ->
             if (snapshot != null && snapshot.exists()) {
                 val matchedWith = snapshot.getString("matchedWith")
