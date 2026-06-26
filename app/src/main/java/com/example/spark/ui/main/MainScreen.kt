@@ -1,9 +1,7 @@
 package com.example.spark.ui.main
 
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,19 +21,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
 import com.example.spark.*
-import com.example.spark.data.repository.SparkRepository
 import com.example.spark.data.repository.AuthRepository
+import com.example.spark.data.repository.SparkRepository
+import com.example.spark.domain.model.Party
 import com.example.spark.domain.model.User
 import com.example.spark.theme.*
 import com.example.spark.ui.feed.FeedTab
 import com.example.spark.ui.party.PartyTab
 import com.example.spark.ui.profile.ProfileTab
 import com.example.spark.ui.soulgame.SoulGameTab
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 enum class BottomTab(val label: String, val icon: ImageVector, val selectedIcon: ImageVector) {
     HOME("Ana Sayfa", Icons.Outlined.Home, Icons.Filled.Home),
@@ -197,7 +199,7 @@ fun HomeTab(onItemClick: (NavKey) -> Unit) {
         item {
             var isSearchingVoice by remember { mutableStateOf(false) }
             val coroutineScope = rememberCoroutineScope()
-            val context = androidx.compose.ui.platform.LocalContext.current
+            val context = LocalContext.current
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -221,13 +223,13 @@ fun HomeTab(onItemClick: (NavKey) -> Unit) {
                         if (isSearchingVoice) return@FeatureCard
                         isSearchingVoice = true
                         coroutineScope.launch {
-                            kotlinx.coroutines.delay(1000)
+                            delay(1000)
                             val currentUserId = AuthRepository.currentUser?.uid ?: return@launch
                             val match = SparkRepository.findRandomMatch(currentUserId).getOrNull()
                             if (match != null) {
                                 onItemClick(VoiceGame(match.id))
                             } else {
-                                android.widget.Toast.makeText(context, "Şu an aktif kimse yok.", android.widget.Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Şu an aktif kimse yok.", Toast.LENGTH_SHORT).show()
                             }
                             isSearchingVoice = false
                         }
@@ -286,7 +288,7 @@ fun HomeTab(onItemClick: (NavKey) -> Unit) {
         }
 
         item {
-            var activeParties by remember { mutableStateOf<List<com.example.spark.domain.model.Party>>(emptyList()) }
+            var activeParties by remember { mutableStateOf<List<Party>>(emptyList()) }
             LaunchedEffect(Unit) {
                 activeParties = SparkRepository.getActiveParties().getOrNull()?.take(3) ?: emptyList()
             }
@@ -387,13 +389,13 @@ fun FeatureCard(
 
 @Composable
 fun OnlineUserCard(user: User) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .width(72.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable { android.widget.Toast.makeText(context, "${user.displayName} profili yakında!", android.widget.Toast.LENGTH_SHORT).show() }
+            .clickable { Toast.makeText(context, "${user.displayName} profili yakında!", Toast.LENGTH_SHORT).show() }
             .padding(4.dp)
     ) {
         Box {

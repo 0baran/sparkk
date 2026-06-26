@@ -46,15 +46,14 @@ fun SoulChatScreen(
     }
 
     // Timer animation
-    val infiniteTransition = rememberInfiniteTransition(label = "timer")
-    val timerProgress by infiniteTransition.animateFloat(
-        initialValue = 1f, targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(180000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "progress"
-    )
+    var remainingSeconds by remember { mutableIntStateOf(180) }
+    LaunchedEffect(Unit) {
+        while (remainingSeconds > 0) {
+            kotlinx.coroutines.delay(1000)
+            remainingSeconds--
+        }
+    }
+    val timerProgress = remainingSeconds / 180f
 
     Column(
         modifier = modifier
@@ -106,8 +105,10 @@ fun SoulChatScreen(
                         .background(SurfaceElevated)
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
+                    val mins = remainingSeconds / 60
+                    val secs = remainingSeconds % 60
                     Text(
-                        text = "⏱ 2:45",
+                        text = "⏱ ${String.format("%d:%02d", mins, secs)}",
                         style = MaterialTheme.typography.labelMedium,
                         color = AccentGold
                     )
